@@ -2,74 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Static QR Generator</title>
+  <title>Static QR Code Generator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 700px;
+      max-width: 800px;
       margin: 2rem auto;
-      padding: 0 1rem;
+      padding: 0 1rem 3rem;
     }
     h1 {
-      font-size: 1.7rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+      margin-bottom: 0.25rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+      margin-top: 1.5rem;
+    }
+    .hint {
+      font-size: 0.9rem;
+      color: #555;
     }
     form {
       margin: 1rem 0;
-      padding: 1rem;
+      padding: 1.25rem;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+    .field-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
     }
     label {
       display: block;
       font-weight: 600;
-      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
     }
     input[type="text"],
     input[type="number"],
-    textarea {
+    textarea,
+    select {
       width: 100%;
       box-sizing: border-box;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      border-radius: 4px;
+      padding: 0.45rem 0.55rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
       font: inherit;
     }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    input[type="color"] {
+      width: 100%;
+      height: 2.2rem;
+      padding: 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+    }
     button {
       margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
       border: none;
       cursor: pointer;
       font-weight: 600;
+      background: #111827;
+      color: white;
     }
     button:hover {
-      opacity: 0.9;
-    }
-    .qr-result {
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-    .qr-result img {
-      max-width: 100%;
-      height: auto;
+      opacity: 0.92;
     }
     .error {
       color: #b00020;
       margin-top: 0.5rem;
     }
-    .hint {
-      font-size: 0.9rem;
-      color: #555;
+    .qr-card {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      text-align: center;
+    }
+    .qr-card img {
+      max-width: 100%;
+      height: auto;
+    }
+    .download-link {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      border: 1px solid #111827;
+      text-decoration: none;
+      font-size: 0.95rem;
+      color: #111827;
+    }
+    .download-link:hover {
+      background: #111827;
+      color: #fff;
     }
   </style>
 </head>
 <body>
   <h1>Static QR Code Generator</h1>
   <p class="hint">
-    Encode any URL or text (e.g. a Google Drive video link). The QR itself never expires;
+    Encode any URL or text (e.g. a Google Drive video link). The QR never expires;
     it will work as long as the link stays valid.
   </p>
 
@@ -78,30 +128,78 @@
     <textarea
       id="data"
       name="data"
-      rows="3"
       placeholder="Paste your Google Drive video link here"
       required
     >{{ input_data }}</textarea>
 
-    <label for="box_size">Box size (pixels per module)</label>
-    <input
-      type="number"
-      id="box_size"
-      name="box_size"
-      min="2"
-      max="40"
-      value="{{ box_size }}"
-    />
+    <div class="field-group">
+      <div>
+        <label for="box_size">Size / quality (box size)</label>
+        <input
+          type="number"
+          id="box_size"
+          name="box_size"
+          min="4"
+          max="40"
+          value="{{ box_size }}"
+        />
+        <div class="hint">Higher = bigger & higher resolution (better for printing).</div>
+      </div>
 
-    <label for="border">Border (modules)</label>
-    <input
-      type="number"
-      id="border"
-      name="border"
-      min="1"
-      max="10"
-      value="{{ border }}"
-    />
+      <div>
+        <label for="border">Border (modules)</label>
+        <input
+          type="number"
+          id="border"
+          name="border"
+          min="1"
+          max="10"
+          value="{{ border }}"
+        />
+        <div class="hint">Space around the code &mdash; useful for sticker cutting.</div>
+      </div>
+    </div>
+
+    <h2>Appearance</h2>
+    <div class="field-group">
+      <div>
+        <label for="fg_color">Foreground color</label>
+        <input
+          type="color"
+          id="fg_color"
+          name="fg_color"
+          value="{{ fg_color }}"
+        />
+      </div>
+      <div>
+        <label for="bg_color">Background color</label>
+        <input
+          type="color"
+          id="bg_color"
+          name="bg_color"
+          value="{{ bg_color }}"
+        />
+        <div class="hint">Ignored if transparent background is enabled.</div>
+      </div>
+      <div>
+        <label for="image_format">Download type</label>
+        <select id="image_format" name="image_format">
+          <option value="png" {% if image_format == 'png' %}selected{% endif %}>PNG (best for printing)</option>
+          <option value="svg" {% if image_format == 'svg' %}selected{% endif %}>SVG (infinite scale)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input
+        type="checkbox"
+        id="transparent_bg"
+        name="transparent_bg"
+        value="1"
+        {% if transparent_bg %}checked{% endif %}
+      />
+      <label for="transparent_bg">Transparent background (great for labels / stickers)</label>
+    </div>
 
     <button type="submit">Generate QR</button>
 
@@ -111,11 +209,16 @@
   </form>
 
   {% if qr_data_url %}
-    <div class="qr-result">
+    <div class="qr-card">
       <h2>Your QR Code</h2>
       <img src="{{ qr_data_url }}" alt="Generated QR code" />
+      <br />
+      <a class="download-link" href="{{ qr_data_url }}" download="{{ filename or 'qr-code' }}">
+        Download {{ filename or 'QR' }}
+      </a>
       <p class="hint">
-        Right-click → “Save image as…” to download the PNG.
+        Tip: for a whiskey label, try a dark charcoal foreground + off-white or transparent background,
+        and a higher size/quality value (e.g. 18–24).
       </p>
     </div>
   {% endif %}
