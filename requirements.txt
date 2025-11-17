@@ -1,2 +1,2 @@
 Flask
-qrcode[pil]
+qrcode[pil,svg]
