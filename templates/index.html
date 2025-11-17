@@ -143,7 +143,7 @@
           max="40"
           value="{{ box_size }}"
         />
-        <div class="hint">Higher = bigger & higher resolution (better for printing).</div>
+        <div class="hint">Higher = bigger & sharper (better for printing).</div>
       </div>
 
       <div>
@@ -156,12 +156,31 @@
           max="10"
           value="{{ border }}"
         />
-        <div class="hint">Space around the code &mdash; useful for sticker cutting.</div>
+        <div class="hint">Margin around the code (nice for stickers).</div>
       </div>
     </div>
 
     <h2>Appearance</h2>
     <div class="field-group">
+      <div>
+        <label for="style_preset">Style preset</label>
+        <select id="style_preset" name="style_preset">
+          <option value="classic" {% if style_preset == 'classic' %}selected{% endif %}>
+            Classic (black & white)
+          </option>
+          <option value="gold" {% if style_preset == 'gold' %}selected{% endif %}>
+            Gold (great for whiskey labels)
+          </option>
+          <option value="silver" {% if style_preset == 'silver' %}selected{% endif %}>
+            Silver
+          </option>
+          <option value="custom" {% if style_preset == 'custom' %}selected{% endif %}>
+            Custom colors below
+          </option>
+        </select>
+        <div class="hint">Gold / Silver presets override the colors below.</div>
+      </div>
+
       <div>
         <label for="fg_color">Foreground color</label>
         <input
@@ -171,6 +190,7 @@
           value="{{ fg_color }}"
         />
       </div>
+
       <div>
         <label for="bg_color">Background color</label>
         <input
@@ -181,13 +201,39 @@
         />
         <div class="hint">Ignored if transparent background is enabled.</div>
       </div>
+
       <div>
         <label for="image_format">Download type</label>
         <select id="image_format" name="image_format">
-          <option value="png" {% if image_format == 'png' %}selected{% endif %}>PNG (best for printing)</option>
-          <option value="svg" {% if image_format == 'svg' %}selected{% endif %}>SVG (infinite scale)</option>
+          <option value="png" {% if image_format == 'png' %}selected{% endif %}>PNG (with frame / initials)</option>
+          <option value="svg" {% if image_format == 'svg' %}selected{% endif %}>SVG (no decorations, infinite scale)</option>
         </select>
       </div>
+    </div>
+
+    <div class="field-group">
+      <div>
+        <label for="initials">Initials (optional)</label>
+        <input
+          type="text"
+          id="initials"
+          name="initials"
+          maxlength="8"
+          value="{{ initials or '' }}"
+        />
+        <div class="hint">Rendered in a small badge in the center (PNG only).</div>
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input
+        type="checkbox"
+        id="add_frame"
+        name="add_frame"
+        value="1"
+        {% if add_frame %}checked{% endif %}
+      />
+      <label for="add_frame">Add decorative frame (PNG only)</label>
     </div>
 
     <div class="checkbox-row">
@@ -198,7 +244,7 @@
         value="1"
         {% if transparent_bg %}checked{% endif %}
       />
-      <label for="transparent_bg">Transparent background (great for labels / stickers)</label>
+      <label for="transparent_bg">Transparent background (best for labels / stickers)</label>
     </div>
 
     <button type="submit">Generate QR</button>
@@ -217,8 +263,9 @@
         Download {{ filename or 'QR' }}
       </a>
       <p class="hint">
-        Tip: for a whiskey label, try a dark charcoal foreground + off-white or transparent background,
-        and a higher size/quality value (e.g. 18–24).
+        For a whiskey anniversary bottle, try the <strong>Gold</strong> style preset,
+        transparent background, a slightly larger size (e.g. 18–24), frame on, and initials like
+        <strong>H &amp; A</strong>.
       </p>
     </div>
   {% endif %}
