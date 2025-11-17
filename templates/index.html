@@ -2,272 +2,669 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Static QR Code Generator</title>
+  <title>QR Code Generator - Gift Labels & More</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem 3rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 1rem;
     }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
     h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.25rem;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      color: #1a202c;
+      margin-bottom: 0.5rem;
     }
-    h2 {
-      font-size: 1.4rem;
-      margin-top: 1.5rem;
+
+    .subtitle {
+      color: #718096;
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
     }
-    .hint {
-      font-size: 0.9rem;
-      color: #555;
-    }
-    form {
-      margin: 1rem 0;
+
+    .section {
+      background: #f7fafc;
       padding: 1.25rem;
-      border: 1px solid #ddd;
       border-radius: 12px;
-      background: #fafafa;
+      margin-bottom: 1rem;
+      border: 2px solid #e2e8f0;
     }
-    .field-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
+
+    .section h2 {
+      font-size: 1.3rem;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
+
+    .section-icon {
+      font-size: 1.5rem;
+    }
+
     label {
       display: block;
       font-weight: 600;
-      margin-bottom: 0.25rem;
+      color: #4a5568;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
     }
+
     input[type="text"],
     input[type="number"],
     textarea,
     select {
       width: 100%;
-      box-sizing: border-box;
-      padding: 0.45rem 0.55rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font: inherit;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      margin-bottom: 1rem;
+      font-family: inherit;
     }
+
     textarea {
       resize: vertical;
-      min-height: 70px;
+      min-height: 80px;
     }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
     input[type="color"] {
       width: 100%;
-      height: 2.2rem;
-      padding: 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: #fff;
-    }
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.75rem;
-      font-size: 0.95rem;
-    }
-    button {
-      margin-top: 1rem;
-      padding: 0.7rem 1.4rem;
-      border-radius: 999px;
-      border: none;
+      height: 3rem;
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
-      background: #111827;
-      color: white;
     }
-    button:hover {
-      opacity: 0.92;
+
+    input[type="file"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px dashed #cbd5e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
     }
-    .error {
-      color: #b00020;
-      margin-top: 0.5rem;
+
+    input[type="file"]:hover {
+      border-color: #667eea;
+      background: #f7fafc;
     }
-    .qr-card {
-      margin-top: 1.5rem;
-      padding: 1.25rem;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .preset-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .preset-card {
+      border: 3px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: white;
       text-align: center;
     }
-    .qr-card img {
+
+    .preset-card:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .preset-card.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+    }
+
+    .preset-preview {
+      height: 60px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    .preset-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5568;
+    }
+
+    .mode-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .mode-card {
+      position: relative;
+      padding: 1rem 0.75rem;
+      border: 3px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      background: white;
+    }
+
+    .mode-card:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .mode-card.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+    }
+
+    .mode-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .mode-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .mode-title {
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .mode-description {
+      font-size: 0.75rem;
+      color: #718096;
+    }
+
+    .content-type-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .content-type-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .content-type-btn:hover {
+      border-color: #667eea;
+    }
+
+    .content-type-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .content-input-area {
+      display: none;
+    }
+
+    .content-input-area.active {
+      display: block;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+    }
+
+    .checkbox-group:hover {
+      background: #f7fafc;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    .error {
+      background: #fee;
+      color: #c00;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      border-left: 4px solid #c00;
+    }
+
+    .qr-result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f7fafc;
+      border-radius: 12px;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+    }
+
+    .qr-result h2 {
+      font-size: 1.5rem;
+      color: #1a202c;
+      margin-bottom: 1rem;
+    }
+
+    .qr-result img {
       max-width: 100%;
       height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
     }
-    .download-link {
+
+    .download-btn {
       display: inline-block;
-      margin-top: 0.75rem;
-      padding: 0.45rem 1rem;
-      border-radius: 999px;
-      border: 1px solid #111827;
+      padding: 0.75rem 1.5rem;
+      background: #1a202c;
+      color: white;
       text-decoration: none;
-      font-size: 0.95rem;
-      color: #111827;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s;
     }
-    .download-link:hover {
-      background: #111827;
-      color: #fff;
+
+    .download-btn:hover {
+      background: #2d3748;
+      transform: translateY(-2px);
+    }
+
+    .info-box {
+      background: #edf2f7;
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .info-box p {
+      color: #4a5568;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .preset-gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .mode-selector {
+        grid-template-columns: 1fr;
+      }
+
+      .content-type-selector {
+        flex-direction: column;
+      }
+    }
+
+    /* Touch-friendly tap targets */
+    @media (hover: none) {
+      .preset-card,
+      .mode-card,
+      .content-type-btn {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Static QR Code Generator</h1>
-  <p class="hint">
-    Encode any URL or text (e.g. a Google Drive video link). The QR never expires;
-    it will work as long as the link stays valid.
-  </p>
+  <div class="container">
+    <h1>🎨 Custom QR Code Generator</h1>
+    <p class="subtitle">
+      Create beautiful, personalized QR codes for gifts, weddings, events, and more.
+      Your QR code is permanent and works as long as your link stays valid.
+    </p>
 
-  <form method="post">
-    <label for="data">URL or text</label>
-    <textarea
-      id="data"
-      name="data"
-      placeholder="Paste your Google Drive video link here"
-      required
-    >{{ input_data }}</textarea>
-
-    <div class="field-group">
-      <div>
-        <label for="box_size">Size / quality (box size)</label>
-        <input
-          type="number"
-          id="box_size"
-          name="box_size"
-          min="4"
-          max="40"
-          value="{{ box_size }}"
-        />
-        <div class="hint">Higher = bigger & sharper (better for printing).</div>
+    <form method="post" enctype="multipart/form-data">
+      <!-- QR Content -->
+      <div class="section">
+        <h2><span class="section-icon">🔗</span> QR Content</h2>
+        <label for="data">URL or Text</label>
+        <textarea
+          id="data"
+          name="data"
+          placeholder="Paste your link here (e.g., Google Drive video, website, message)"
+          required
+        >{{ input_data }}</textarea>
       </div>
 
-      <div>
-        <label for="border">Border (modules)</label>
-        <input
-          type="number"
-          id="border"
-          name="border"
-          min="1"
-          max="10"
-          value="{{ border }}"
-        />
-        <div class="hint">Margin around the code (nice for stickers).</div>
-      </div>
-    </div>
-
-    <h2>Appearance</h2>
-    <div class="field-group">
-      <div>
-        <label for="style_preset">Style preset</label>
-        <select id="style_preset" name="style_preset">
-          <option value="classic" {% if style_preset == 'classic' %}selected{% endif %}>
-            Classic (black & white)
-          </option>
-          <option value="gold" {% if style_preset == 'gold' %}selected{% endif %}>
-            Gold (great for whiskey labels)
-          </option>
-          <option value="silver" {% if style_preset == 'silver' %}selected{% endif %}>
-            Silver
-          </option>
-          <option value="custom" {% if style_preset == 'custom' %}selected{% endif %}>
-            Custom colors below
-          </option>
-        </select>
-        <div class="hint">Gold / Silver presets override the colors below.</div>
-      </div>
-
-      <div>
-        <label for="fg_color">Foreground color</label>
-        <input
-          type="color"
-          id="fg_color"
-          name="fg_color"
-          value="{{ fg_color }}"
-        />
-      </div>
-
-      <div>
-        <label for="bg_color">Background color</label>
-        <input
-          type="color"
-          id="bg_color"
-          name="bg_color"
-          value="{{ bg_color }}"
-        />
-        <div class="hint">Ignored if transparent background is enabled.</div>
+      <!-- Template Style -->
+      <div class="section">
+        <h2><span class="section-icon">🎨</span> Template Style</h2>
+        <div class="preset-gallery">
+          <div class="preset-card {% if style_preset == 'classic' %}active{% endif %}" onclick="selectPreset(this, 'classic')">
+            <div class="preset-preview" style="background: linear-gradient(135deg, #FFFFFF 0%, #000000 100%);"></div>
+            <div class="preset-name">Classic</div>
+          </div>
+          <div class="preset-card {% if style_preset == 'gold' %}active{% endif %}" onclick="selectPreset(this, 'gold')">
+            <div class="preset-preview" style="background: linear-gradient(135deg, #faf5e6 0%, #b38b1b 100%);"></div>
+            <div class="preset-name">Gold</div>
+          </div>
+          <div class="preset-card {% if style_preset == 'silver' %}active{% endif %}" onclick="selectPreset(this, 'silver')">
+            <div class="preset-preview" style="background: linear-gradient(135deg, #f5f5f7 0%, #6f7c89 100%);"></div>
+            <div class="preset-name">Silver</div>
+          </div>
+          <div class="preset-card {% if style_preset == 'wedding_ivory' %}active{% endif %}" onclick="selectPreset(this, 'wedding_ivory')">
+            <div class="preset-preview" style="background: linear-gradient(135deg, #FBF7F2 0%, #C6A667 100%);"></div>
+            <div class="preset-name">Wedding</div>
+          </div>
+          <div class="preset-card {% if style_preset == 'birthday' %}active{% endif %}" onclick="selectPreset(this, 'birthday')">
+            <div class="preset-preview" style="background: linear-gradient(135deg, #F8EDFF 0%, #E63946 100%);"></div>
+            <div class="preset-name">Birthday</div>
+          </div>
+          <div class="preset-card {% if style_preset == 'craft_beer' %}active{% endif %}" onclick="selectPreset(this, 'craft_beer')">
+            <div class="preset-preview" style="background: linear-gradient(135deg, #FFF8DC 0%, #8B4513 100%);"></div>
+            <div class="preset-name">Craft Beer</div>
+          </div>
+        </div>
+        <input type="hidden" id="style_preset" name="style_preset" value="{{ style_preset or 'classic' }}">
+        
+        <div class="grid-2">
+          <div>
+            <label for="fg_color">Foreground Color</label>
+            <input type="color" id="fg_color" name="fg_color" value="{{ fg_color }}">
+          </div>
+          <div>
+            <label for="bg_color">Background Color</label>
+            <input type="color" id="bg_color" name="bg_color" value="{{ bg_color }}">
+            <p class="hint">Presets override these colors</p>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label for="image_format">Download type</label>
-        <select id="image_format" name="image_format">
-          <option value="png" {% if image_format == 'png' %}selected{% endif %}>PNG (with frame / initials)</option>
-          <option value="svg" {% if image_format == 'svg' %}selected{% endif %}>SVG (no decorations, infinite scale)</option>
-        </select>
+      <!-- Personalization -->
+      <div class="section">
+        <h2><span class="section-icon">✨</span> Personalization</h2>
+        
+        <label>Personalization Style</label>
+        <div class="mode-selector">
+          <label class="mode-card {% if personalization_mode == 'none' or not personalization_mode %}active{% endif %}">
+            <input type="radio" name="personalization_mode" value="none" {% if personalization_mode == 'none' or not personalization_mode %}checked{% endif %}>
+            <div class="mode-icon">⚪</div>
+            <div class="mode-title">None</div>
+            <div class="mode-description">Plain QR</div>
+          </label>
+          
+          <label class="mode-card {% if personalization_mode == 'minimal' %}active{% endif %}">
+            <input type="radio" name="personalization_mode" value="minimal" {% if personalization_mode == 'minimal' %}checked{% endif %}>
+            <div class="mode-icon">🎯</div>
+            <div class="mode-title">Minimal</div>
+            <div class="mode-description">Below QR</div>
+          </label>
+          
+          <label class="mode-card {% if personalization_mode == 'focal' %}active{% endif %}">
+            <input type="radio" name="personalization_mode" value="focal" {% if personalization_mode == 'focal' %}checked{% endif %}>
+            <div class="mode-icon">⭐</div>
+            <div class="mode-title">Focal</div>
+            <div class="mode-description">Center stage</div>
+          </label>
+          
+          <label class="mode-card {% if personalization_mode == 'easter_egg' %}active{% endif %}">
+            <input type="radio" name="personalization_mode" value="easter_egg" {% if personalization_mode == 'easter_egg' %}checked{% endif %}>
+            <div class="mode-icon">🔍</div>
+            <div class="mode-title">Hidden</div>
+            <div class="mode-description">Easter egg</div>
+          </label>
+        </div>
+
+        <div id="personalization-content">
+          <label>Content Type</label>
+          <div class="content-type-selector">
+            <button type="button" class="content-type-btn {% if content_type == 'text' or not content_type %}active{% endif %}" onclick="selectContentType('text')">
+              📝 Initials
+            </button>
+            <button type="button" class="content-type-btn {% if content_type == 'logo' %}active{% endif %}" onclick="selectContentType('logo')">
+              🏷️ Logo
+            </button>
+            <button type="button" class="content-type-btn {% if content_type == 'image' %}active{% endif %}" onclick="selectContentType('image')">
+              📷 Photo
+            </button>
+          </div>
+          <input type="hidden" id="content_type" name="content_type" value="{{ content_type or 'text' }}">
+
+          <div id="text-input" class="content-input-area {% if content_type == 'text' or not content_type %}active{% endif %}">
+            <label for="initials">Initials (2-3 letters)</label>
+            <input type="text" id="initials" name="initials" maxlength="10" value="{{ initials or '' }}" placeholder="AB">
+          </div>
+
+          <div id="logo-input" class="content-input-area {% if content_type == 'logo' %}active{% endif %}">
+            <label for="logo_upload">Upload Logo</label>
+            <input type="file" id="logo_upload" name="logo_upload" accept="image/png,image/jpeg,image/gif,image/webp">
+            <p class="hint">Max 5MB. PNG, JPG, or GIF</p>
+          </div>
+
+          <div id="image-input" class="content-input-area {% if content_type == 'image' %}active{% endif %}">
+            <label for="photo_upload">Upload Photo</label>
+            <input type="file" id="photo_upload" name="photo_upload" accept="image/png,image/jpeg,image/gif,image/webp">
+            <p class="hint">Max 5MB. PNG, JPG, or GIF</p>
+          </div>
+
+          <div class="info-box">
+            <p id="mode-tip">
+              <strong>💡 Tip:</strong> 
+              <span id="mode-text">Choose a personalization mode above to see your options.</span>
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="field-group">
-      <div>
-        <label for="initials">Initials (optional)</label>
-        <input
-          type="text"
-          id="initials"
-          name="initials"
-          maxlength="8"
-          value="{{ initials or '' }}"
-        />
-        <div class="hint">Rendered in a small badge in the center (PNG only).</div>
+      <!-- Advanced Options -->
+      <div class="section">
+        <h2><span class="section-icon">⚙️</span> Advanced Options</h2>
+        
+        <div class="grid-2">
+          <div>
+            <label for="box_size">Size / Quality</label>
+            <input type="number" id="box_size" name="box_size" min="4" max="40" value="{{ box_size }}">
+            <p class="hint">Higher = sharper (better for printing)</p>
+          </div>
+
+          <div>
+            <label for="border">Border (modules)</label>
+            <input type="number" id="border" name="border" min="1" max="10" value="{{ border }}">
+            <p class="hint">Margin around the code</p>
+          </div>
+        </div>
+
+        <div>
+          <label for="image_format">Download Format</label>
+          <select id="image_format" name="image_format">
+            <option value="png" {% if image_format == 'png' %}selected{% endif %}>PNG (with decorations)</option>
+            <option value="svg" {% if image_format == 'svg' %}selected{% endif %}>SVG (infinite scale, no decorations)</option>
+          </select>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="add_frame" name="add_frame" value="1" {% if add_frame %}checked{% endif %}>
+          <label for="add_frame">Add decorative frame (PNG only)</label>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="transparent_bg" name="transparent_bg" value="1" {% if transparent_bg %}checked{% endif %}>
+          <label for="transparent_bg">Transparent background (for stickers/labels)</label>
+        </div>
       </div>
-    </div>
 
-    <div class="checkbox-row">
-      <input
-        type="checkbox"
-        id="add_frame"
-        name="add_frame"
-        value="1"
-        {% if add_frame %}checked{% endif %}
-      />
-      <label for="add_frame">Add decorative frame (PNG only)</label>
-    </div>
+      <button type="submit" class="generate-btn">🎨 Generate My QR Code</button>
 
-    <div class="checkbox-row">
-      <input
-        type="checkbox"
-        id="transparent_bg"
-        name="transparent_bg"
-        value="1"
-        {% if transparent_bg %}checked{% endif %}
-      />
-      <label for="transparent_bg">Transparent background (best for labels / stickers)</label>
-    </div>
+      {% if error %}
+        <div class="error">❌ Error: {{ error }}</div>
+      {% endif %}
+    </form>
 
-    <button type="submit">Generate QR</button>
-
-    {% if error %}
-      <div class="error">Error: {{ error }}</div>
+    {% if qr_data_url %}
+      <div class="qr-result">
+        <h2>✅ Your QR Code</h2>
+        <img src="{{ qr_data_url }}" alt="Generated QR code" />
+        <br>
+        <a class="download-btn" href="{{ qr_data_url }}" download="{{ filename or 'qr-code' }}">
+          ⬇️ Download {{ filename or 'QR Code' }}
+        </a>
+        <div class="info-box">
+          <p>
+            <strong>📱 Test it:</strong> Scan with your phone camera to make sure it works!
+            For best results on labels, use high quality (18-24) with transparent background.
+          </p>
+        </div>
+      </div>
     {% endif %}
-  </form>
+  </div>
 
-  {% if qr_data_url %}
-    <div class="qr-card">
-      <h2>Your QR Code</h2>
-      <img src="{{ qr_data_url }}" alt="Generated QR code" />
-      <br />
-      <a class="download-link" href="{{ qr_data_url }}" download="{{ filename or 'qr-code' }}">
-        Download {{ filename or 'QR' }}
-      </a>
-      <p class="hint">
-        For a whiskey anniversary bottle, try the <strong>Gold</strong> style preset,
-        transparent background, a slightly larger size (e.g. 18–24), frame on, and initials like
-        <strong>H &amp; A</strong>.
-      </p>
-    </div>
-  {% endif %}
+  <script>
+    // Preset selection
+    function selectPreset(card, presetName) {
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      document.getElementById('style_preset').value = presetName;
+    }
+
+    // Content type selection
+    function selectContentType(type) {
+      document.querySelectorAll('.content-type-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('content_type').value = type;
+      
+      document.querySelectorAll('.content-input-area').forEach(area => area.classList.remove('active'));
+      document.getElementById(`${type}-input`).classList.add('active');
+    }
+
+    // Personalization mode tips
+    const modeTips = {
+      'none': 'No personalization - just a clean QR code.',
+      'minimal': 'Minimal mode places your content cleanly below the QR code. Professional and scannable.',
+      'focal': 'Focal mode puts your content in the center as the main design element. Perfect for gifts!',
+      'easter_egg': 'Easter egg mode hides your content as a subtle surprise. Great for scavenger hunts!'
+    };
+
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        
+        const mode = this.querySelector('input').value;
+        document.getElementById('mode-text').textContent = modeTips[mode];
+        
+        // Show/hide personalization content
+        const contentDiv = document.getElementById('personalization-content');
+        if (mode === 'none') {
+          contentDiv.style.display = 'none';
+        } else {
+          contentDiv.style.display = 'block';
+        }
+      });
+    });
+
+    // Initialize mode tip on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkedMode = document.querySelector('input[name="personalization_mode"]:checked');
+      if (checkedMode) {
+        const mode = checkedMode.value;
+        document.getElementById('mode-text').textContent = modeTips[mode];
+        
+        const contentDiv = document.getElementById('personalization-content');
+        if (mode === 'none') {
+          contentDiv.style.display = 'none';
+        }
+      }
+    });
+  </script>
 </body>
 </html>
